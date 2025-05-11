@@ -1,0 +1,68 @@
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.ScreenUtils;
+
+public class FlappyBird extends ApplicationAdapter {
+    private SpriteBatch batch;
+    private Texture birdTexture;
+    private OrthographicCamera camera;
+
+    private float birdX, birdY; // Posición del pájaro
+    private final float birdSpeed = 100; // Velocidad del pájaro (100 px/seg)
+
+    @Override
+    public void create() {
+        batch = new SpriteBatch();
+        birdTexture = new Texture("bird.png"); // Reemplaza "bird.png" con la imagen del pájaro
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // Inicializa la posición del pájaro en el centro de la pantalla
+        birdX = Gdx.graphics.getWidth() / 2f - birdTexture.getWidth() / 2f;
+        birdY = Gdx.graphics.getHeight() / 2f - birdTexture.getHeight() / 2f;
+    }
+
+    @Override
+    public void render() {
+        ScreenUtils.clear(0, 0, 0, 1); // Limpia la pantalla con un color negro
+
+        handleInput(Gdx.graphics.getDeltaTime());
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.draw(birdTexture, birdX, birdY);
+        batch.end();
+    }
+
+    private void handleInput(float deltaTime) {
+        // Movimiento hacia ARRIBA con 'W'
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            birdY += birdSpeed * deltaTime;
+        }
+        // Movimiento hacia ABAJO con 'S'
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            birdY -= birdSpeed * deltaTime;
+        }
+        // Movimiento hacia la IZQUIERDA con 'A'
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            birdX -= birdSpeed * deltaTime;
+        }
+        // Movimiento hacia la DERECHA con 'D'
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            birdX += birdSpeed * deltaTime;
+        }
+
+        // Limitar el movimiento dentro de los bordes de la pantalla
+        birdX = Math.max(0, Math.min(birdX, Gdx.graphics.getWidth() - birdTexture.getWidth()));
+        birdY = Math.max(0, Math.min(birdY, Gdx.graphics.getHeight() - birdTexture.getHeight()));
+    }
+
+    @Override
+    public void dispose() {
+        batch.dispose();
+        birdTexture.dispose();
+    }
+}
